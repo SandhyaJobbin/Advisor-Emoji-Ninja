@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emoji Ninja - TripAdvisor Moderator Challenge</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background: #00af87;
+            animation: confetti-fall 3s linear infinite;
+            z-index: 1000;
+        }
+
+        .confetti:nth-child(odd) {
+            background: #1e3a8a;
+            animation-delay: 0.5s;
+        }
+
+        .confetti:nth-child(3n) {
+            background: #fbbf24;
+            animation-delay: 1s;
+        }
+
+        @keyframes confetti-fall {
+            0% {
+                transform: translateY(-100vh) rotate(0deg);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        .pulse-correct {
+            animation: pulse-green 0.6s ease-in-out;
+        }
+
+        .pulse-incorrect {
+            animation: pulse-red 0.6s ease-in-out;
+        }
+
+        @keyframes pulse-green {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+                background-color: #10b981;
+            }
+        }
+
+        @keyframes pulse-red {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+                background-color: #ef4444;
+            }
+        }
+
+        .timer-warning {
+            animation: timer-pulse 1s infinite;
+        }
+
+        @keyframes timer-pulse {
+
+            0%,
+            100% {
+                color: #ef4444;
+            }
+
+            50% {
+                color: #fbbf24;
+            }
+        }
+
+        .progress-bar {
+            transition: width 0.3s ease-in-out;
+        }
+
+        .ninja-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #1e3a8a, #00af87);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+
+        .certificate-border {
+            background: linear-gradient(45deg, #00af87, #1e3a8a, #00af87);
+            padding: 4px;
+            border-radius: 20px;
+        }
+
+        .certificate-content {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+        }
+    </style>
+</head>
+
+<body class="bg-gradient-to-br from-blue-900 to-slate-800 min-h-screen">
+    <!-- Header -->
+    <div class="bg-white shadow-lg">
+        <div class="max-w-6xl mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <div class="ninja-icon">
+                        <img src="NINJA EMOJI.png" alt="Ninja emoji">
+                    </div>
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-800">Emoji Ninja</h1>
+                        <p class="text-sm text-gray-600">TripAdvisor Content Moderator - Level 2</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-6">
+                    <div class="text-center">
+                        <div class="text-2xl font-bold" style="color: #00af87;" id="score">0</div>
+                        <div class="text-sm text-gray-600">Score</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-blue-900" id="timer">30</div>
+                        <div class="text-sm text-gray-600">Seconds</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-gray-700" id="question-counter">1/50</div>
+                        <div class="text-sm text-gray-600">Question</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Progress Bar -->
+    <div class="bg-gray-200 h-2">
+        <div class="progress-bar h-2 bg-gradient-to-r from-blue-900 to-teal-500" style="width: 2%" id="progress"></div>
+    </div>
+
+    <!-- Welcome Screen -->
+    <div id="welcome-screen" class="max-w-4xl mx-auto px-6 py-12 text-center">
+        <div class="bg-white rounded-2xl shadow-2xl p-12">
+            <div class="flex justify-center mb-6">
+                <div class="ninja-icon" style="width: 120px; height: 120px;">
+                    <!-- <div style="position: absolute; top: -10px; right: -10px; font-size: 2rem;">✨</div> -->
+                     <img src="NINJA EMOJI.png" alt="Ninja emoji">
+                </div>
+            </div>
+            <h2 class="text-4xl font-bold text-gray-800 mb-4">Welcome to Emoji Ninja!</h2>
+            <p class="text-xl text-gray-600 mb-8">You'll face 50 content moderation scenarios. Each correct answer
+                scores you points. Think fast, think fair!</p>
+            <div class="grid md:grid-cols-3 gap-6 mb-8">
+                <div class="bg-gray-50 rounded-xl p-6">
+                    <div class="text-3xl mb-2">⏱️</div>
+                    <h3 class="font-semibold text-gray-800">Duration</h3>
+                    <p class="text-gray-600">~50 minutes</p>
+                </div>
+                <div class="bg-gray-50 rounded-xl p-6">
+                    <div class="text-3xl mb-2">🎯</div>
+                    <h3 class="font-semibold text-gray-800">Scoring</h3>
+                    <p class="text-gray-600">+10 points correct<br>+5 bonus for speed</p>
+                </div>
+                <div class="bg-gray-50 rounded-xl p-6">
+                    <div class="text-3xl mb-2">🏆</div>
+                    <h3 class="font-semibold text-gray-800">Goal</h3>
+                    <p class="text-gray-600">Master content moderation</p>
+                </div>
+            </div>
+            <button onclick="startGame()"
+                class="bg-gradient-to-r from-blue-900 to-teal-600 hover:from-blue-800 hover:to-teal-500 text-white font-bold py-4 px-12 rounded-xl text-xl transition-all duration-300 transform hover:scale-105 shadow-lg">
+                Start Challenge 🚀
+            </button>
+        </div>
+    </div>
+
+    <!-- Game Screen -->
+    <div id="game-screen" class="hidden max-w-5xl mx-auto px-6 py-8">
+        <div class="bg-white rounded-2xl shadow-2xl overflow-hidden">
+            <!-- Question Header -->
+            <div class="bg-gradient-to-r from-blue-900 to-teal-600 text-white p-6">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-xl font-semibold">Review This Content</h3>
+                    <div class="flex items-center space-x-4">
+                        <div class="bg-white bg-opacity-20 rounded-lg px-3 py-1">
+                            <span class="text-sm">Time: </span>
+                            <span id="question-timer" class="font-bold">30s</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Question Content -->
+            <div class="p-8">
+                <div class="bg-gray-50 rounded-xl p-6 mb-8">
+                    <div class="text-2xl mb-4" id="review-content">"Amazing pizza 🍕🔥🍴😋"</div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="grid md:grid-cols-2 gap-6 mb-8">
+                    <button onclick="makeDecision('keep')" id="keep-btn"
+                        class="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-6 px-8 rounded-xl text-lg transition-all duration-300 transform hover:scale-105 shadow-lg">
+                        ✅ Keep
+                        <div class="text-sm opacity-90 mt-1">Content is appropriate</div>
+                    </button>
+                    <button onclick="makeDecision('remove')" id="remove-btn"
+                        class="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-bold py-6 px-8 rounded-xl text-lg transition-all duration-300 transform hover:scale-105 shadow-lg">
+                        ❌ Remove
+                        <div class="text-sm opacity-90 mt-1">Content violates guidelines</div>
+                    </button>
+                </div>
+
+                <!-- Feedback Area -->
+                <div id="feedback" class="hidden bg-gray-50 rounded-xl p-6">
+                    <div class="flex items-start space-x-4">
+                        <div id="feedback-icon" class="text-3xl"></div>
+                        <div>
+                            <div id="feedback-title" class="font-semibold text-lg mb-2"></div>
+                            <div id="feedback-explanation" class="text-gray-700"></div>
+                            <div id="feedback-points" class="text-sm font-medium mt-2"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Results Screen -->
+    <div id="results-screen" class="hidden max-w-6xl mx-auto px-6 py-12">
+        <div class="bg-white rounded-2xl shadow-2xl p-12 text-center">
+            <div class="flex justify-center mb-6">
+                <div class="ninja-icon" style="width: 100px; height: 100px;">
+                    <img src="NINJA EMOJI.png" alt="Ninja emoji">
+                </div>
+            </div>
+            <h2 class="text-4xl font-bold text-gray-800 mb-4">Challenge Complete!</h2>
+            <div class="text-6xl font-bold mb-4" style="color: #00af87;" id="final-score">0</div>
+            <p class="text-xl text-gray-600 mb-4">out of 750 possible points</p>
+
+            <!-- Performance Status -->
+            <div id="performance-status" class="mb-8 p-6 rounded-xl text-xl font-bold"></div>
+
+            <div class="grid md:grid-cols-3 gap-6 mb-8">
+                <div class="bg-gray-50 rounded-xl p-6">
+                    <div class="text-3xl mb-2">✅</div>
+                    <div class="text-2xl font-bold text-green-600" id="correct-count">0</div>
+                    <p class="text-gray-600">Correct</p>
+                </div>
+                <div class="bg-gray-50 rounded-xl p-6">
+                    <div class="text-3xl mb-2">❌</div>
+                    <div class="text-2xl font-bold text-red-600" id="incorrect-count">0</div>
+                    <p class="text-gray-600">Incorrect</p>
+                </div>
+                <div class="bg-gray-50 rounded-xl p-6">
+                    <div class="text-3xl mb-2">⚡</div>
+                    <div class="text-2xl font-bold" style="color: #00af87;" id="bonus-count">0</div>
+                    <p class="text-gray-600">Speed Bonus</p>
+                </div>
+            </div>
+
+            <!-- Certificate Section -->
+            <div id="certificate-section" class="hidden mb-8">
+                <div class="certificate-border">
+                    <div class="certificate-content text-center">
+                        <div class="flex justify-center mb-4">
+                            <div class="ninja-icon" style="width: 80px; height: 80px;">
+                                <img src="NINJA EMOJI.png" alt="Ninja emoji">
+                            </div>
+                        </div>
+                        <h3 class="text-2xl font-bold text-gray-800 mb-2">🏆 Certificate of Achievement</h3>
+                        <p class="text-lg text-gray-600 mb-4">This certifies that you have successfully completed the
+                        </p>
+                        <h4 class="text-xl font-bold mb-2" style="color: #00af87;">Emoji Ninja Content Moderation
+                            Challenge</h4>
+                        <p class="text-gray-600 mb-4">Level 2 - TripAdvisor Content Moderator</p>
+                        <div class="text-lg font-semibold mb-2">Final Score: <span id="cert-score"
+                                style="color: #00af87;">0</span>/750</div>
+                        <div class="text-sm text-gray-500">Date: <span id="cert-date"></span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Answer Key Section -->
+            <div class="text-left mb-8">
+                <button onclick="toggleAnswerKey()"
+                    class="bg-gray-100 hover:bg-gray-200 text-gray-800 font-semibold py-3 px-6 rounded-lg mb-4 transition-colors">
+                    📋 View Answer Key & Mistakes
+                </button>
+                <div id="answer-key" class="hidden bg-gray-50 rounded-xl p-6 max-h-96 overflow-y-auto">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">Answer Key & Your Mistakes</h3>
+                    <div id="mistakes-list"></div>
+                    <div id="full-answer-key" class="mt-6">
+                        <h4 class="font-semibold text-gray-700 mb-3">Complete Answer Key:</h4>
+                        <div class="space-y-2 text-sm" id="complete-answers"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-center space-x-4">
+                <button onclick="restartGame()"
+                    class="bg-gradient-to-r from-blue-900 to-teal-600 hover:from-blue-800 hover:to-teal-500 text-white font-bold py-4 px-8 rounded-xl text-lg transition-all duration-300 transform hover:scale-105 shadow-lg">
+                    Try Again 🔄
+                </button>
+                <button onclick="downloadCertificate()" id="download-cert-btn"
+                    class="hidden bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-4 px-8 rounded-xl text-lg transition-all duration-300 transform hover:scale-105 shadow-lg">
+                    Download Certificate 📜
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            { content: "Amazing pizza 🍕🔥🍴😋", correct: "keep", explanation: "Positive, non-offensive food review." },
+            { content: "Looking for fun 🍑🍆💦💋 DMs open", correct: "remove", explanation: "Sexual solicitation via emojis." },
+            { content: "Great for kids! 👶🎠😊", correct: "keep", explanation: "Safe, family-friendly review." },
+            { content: "Need that 💊 fix ASAP 😵‍💫💨", correct: "remove", explanation: "Reference to drug use." },
+            { content: "Best sunset ever 🌅📸😍", correct: "keep", explanation: "Wholesome appreciation." },
+            { content: "OnlyFans 🔗💦👙💰🔥", correct: "remove", explanation: "Promoting adult content." },
+            { content: "Loved the vibe 🎶🍷✨", correct: "keep", explanation: "Fun, casual, no violation." },
+            { content: "Trippy weekend 🍄🌈😵‍💫💭", correct: "remove", explanation: "References psychedelic drug use." },
+            { content: "Clean and cozy 🧼🛏️🌼", correct: "keep", explanation: "Hygiene and comfort reflected positively." },
+            { content: "Wanna play? 🍑🍆🍒🔞😉", correct: "remove", explanation: "Sexual innuendo; against guidelines." },
+            { content: "Beautiful view 🌄😍👌", correct: "keep", explanation: "Safe and descriptive." },
+            { content: "Shrooms changed my life 🍄🔥💡", correct: "remove", explanation: "Advocating drug use." },
+            { content: "Perfect date night 💑🍷🍝", correct: "keep", explanation: "Positive relationship context." },
+            { content: "High AF rn 💨👽😂", correct: "remove", explanation: "Open reference to drug use." },
+            { content: "Yummy desserts 🍨❤️👏", correct: "keep", explanation: "Simple and sweet compliment." },
+            { content: "Hot pics for sale 🔥📸💋💰", correct: "remove", explanation: "Implies adult content sales." },
+            { content: "Fast delivery 🚚💨💯", correct: "keep", explanation: "Non-offensive compliment." },
+            { content: "Best stuff in town 🌿🔥💨 DM me", correct: "remove", explanation: "Drug promotion/dealing implication." },
+            { content: "Super relaxing 🌺🧖‍♀️💤", correct: "keep", explanation: "Appropriate for spa/wellness feedback." },
+            { content: "Coke party tonight? 🧂💉🎉", correct: "remove", explanation: "Direct reference to illegal drugs." },
+            { content: "Helpful staff and great food 👨‍🍳👍🍲", correct: "keep", explanation: "Constructive and clear." },
+            { content: "Wet and ready 😈🍑💦💋", correct: "remove", explanation: "Highly sexual and suggestive." },
+            { content: "Loved the jungle tour 🐒🌴🌞", correct: "keep", explanation: "Positive travel feedback." },
+            { content: "Rollin' all night 🔥💊🎶😵", correct: "remove", explanation: "Slang for ecstasy use." },
+            { content: "Clean rooms, nice service 🧹🏨😊", correct: "keep", explanation: "Appropriate hospitality review." },
+            { content: "Click here for fun 💋💃🤑💯🔥", correct: "remove", explanation: "Suggestive and spam-like." },
+            { content: "Perfect for family outings 👨‍👩‍👧‍👦🏞️❤️", correct: "keep", explanation: "Wholesome and context-appropriate." },
+            { content: "DM for greens 🌿💰💨", correct: "remove", explanation: "Implying drug sale." },
+            { content: "Great playlist 🎧🎶🔥", correct: "keep", explanation: "Safe entertainment-related content." },
+            { content: "Popped 3 and flew to Mars 🚀💊😵‍💫", correct: "remove", explanation: "Drug use reference." },
+            { content: "Tasty coffee ☕❤️🔥", correct: "keep", explanation: "Simple product praise." },
+            { content: "Naughty snaps here 👀📸🔞💋💵", correct: "remove", explanation: "Solicitation of sexual content." },
+            { content: "Very peaceful place 🕊️🌳😌", correct: "keep", explanation: "Calm and positive tone." },
+            { content: "He gave me the 🍆 of my life 😩💦💯", correct: "remove", explanation: "Graphic sexual reference." },
+            { content: "Cozy cabin vibes 🛏️🔥🌲", correct: "keep", explanation: "Safe, well-described." },
+            { content: "Let's hook up tonight 💋💦🚗🛏️", correct: "remove", explanation: "Implied sexual encounter." },
+            { content: "Loved the art exhibit 🎨🖼️👏", correct: "keep", explanation: "Harmless and expressive." },
+            { content: "One puff away from peace 🌿💨😌", correct: "remove", explanation: "Marijuana promotion." },
+            { content: "Super clean store 🧼🛒💯", correct: "keep", explanation: "Hygiene-focused and positive." },
+            { content: "Private show 🎥👙🔥💸", correct: "remove", explanation: "Sexual content solicitation." },
+            { content: "Highly recommend ⭐⭐⭐⭐⭐", correct: "keep", explanation: "Standard good review." },
+            { content: "Got that gas? ⛽💨😉", correct: "remove", explanation: "Slang for drugs." },
+            { content: "Excellent for solo travelers 🎒🌍👍", correct: "keep", explanation: "Contextually sound." },
+            { content: "Buy followers now 💯👑📈💰 DM", correct: "remove", explanation: "Spam/scam promotion." },
+            { content: "Perfect breakfast spot 🥐☕🌞", correct: "keep", explanation: "Food-related and non-controversial." },
+            { content: "You're such a 🐍🖕", correct: "remove", explanation: "Harassment and hostile tone." },
+            { content: "Fun carnival 🎡🍭😁", correct: "keep", explanation: "Joyful and kid-friendly." },
+            { content: "Best plug in town 🌿📦💵", correct: "remove", explanation: "Drug dealer reference." },
+            { content: "Friendly barista ☕😊👋", correct: "keep", explanation: "Safe and positive tone." },
+            { content: "Go drink bleach 🧼🥤☠️", correct: "remove", explanation: "Encouraging harmful behavior." }
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+        let correctAnswers = 0;
+        let incorrectAnswers = 0;
+        let speedBonuses = 0;
+        let questionTimer;
+        let timeLeft = 30;
+        let gameActive = false;
+        let userAnswers = []; // Track user's answers
+
+        function startGame() {
+            document.getElementById('welcome-screen').classList.add('hidden');
+            document.getElementById('game-screen').classList.remove('hidden');
+            gameActive = true;
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            if (currentQuestion >= questions.length) {
+                endGame();
+                return;
+            }
+
+            const question = questions[currentQuestion];
+            document.getElementById('review-content').textContent = `"${question.content}"`;
+            document.getElementById('question-counter').textContent = `${currentQuestion + 1}/50`;
+            document.getElementById('progress').style.width = `${((currentQuestion + 1) / 50) * 100}%`;
+
+            // Reset timer
+            timeLeft = 30;
+            updateTimer();
+            startQuestionTimer();
+
+            // Hide feedback and enable buttons
+            document.getElementById('feedback').classList.add('hidden');
+            document.getElementById('keep-btn').disabled = false;
+            document.getElementById('remove-btn').disabled = false;
+            document.getElementById('keep-btn').classList.remove('opacity-50');
+            document.getElementById('remove-btn').classList.remove('opacity-50');
+        }
+
+        function startQuestionTimer() {
+            questionTimer = setInterval(() => {
+                timeLeft--;
+                updateTimer();
+
+                if (timeLeft <= 0) {
+                    clearInterval(questionTimer);
+                    makeDecision(null); // Auto-submit with no answer
+                }
+            }, 1000);
+        }
+
+        function updateTimer() {
+            const timerElement = document.getElementById('question-timer');
+            const mainTimerElement = document.getElementById('timer');
+
+            timerElement.textContent = `${timeLeft}s`;
+            mainTimerElement.textContent = timeLeft;
+
+            if (timeLeft <= 10) {
+                timerElement.classList.add('timer-warning');
+                mainTimerElement.classList.add('timer-warning');
+            } else {
+                timerElement.classList.remove('timer-warning');
+                mainTimerElement.classList.remove('timer-warning');
+            }
+        }
+
+        function makeDecision(decision) {
+            if (!gameActive) return;
+
+            clearInterval(questionTimer);
+
+            const question = questions[currentQuestion];
+            const isCorrect = decision === question.correct;
+            const speedBonus = timeLeft > 20;
+
+            // Record user's answer
+            userAnswers.push({
+                questionIndex: currentQuestion,
+                userAnswer: decision,
+                correctAnswer: question.correct,
+                isCorrect: isCorrect,
+                content: question.content,
+                explanation: question.explanation
+            });
+
+            // Disable buttons
+            document.getElementById('keep-btn').disabled = true;
+            document.getElementById('remove-btn').disabled = true;
+            document.getElementById('keep-btn').classList.add('opacity-50');
+            document.getElementById('remove-btn').classList.add('opacity-50');
+
+            // Show feedback
+            const feedbackElement = document.getElementById('feedback');
+            const feedbackIcon = document.getElementById('feedback-icon');
+            const feedbackTitle = document.getElementById('feedback-title');
+            const feedbackExplanation = document.getElementById('feedback-explanation');
+            const feedbackPoints = document.getElementById('feedback-points');
+
+            let points = 0;
+            let pointsText = '';
+
+            if (decision === null) {
+                // Time ran out
+                feedbackIcon.textContent = '⏰';
+                feedbackTitle.textContent = 'Time\'s Up!';
+                feedbackTitle.className = 'font-semibold text-lg mb-2 text-orange-600';
+                pointsText = 'No points awarded - time expired';
+                incorrectAnswers++;
+            } else if (isCorrect) {
+                points = 10;
+                if (speedBonus) {
+                    points += 5;
+                    speedBonuses++;
+                }
+                score += points;
+                correctAnswers++;
+
+                feedbackIcon.textContent = '✅';
+                feedbackTitle.textContent = 'Correct!';
+                feedbackTitle.className = 'font-semibold text-lg mb-2 text-green-600';
+                pointsText = `+${points} points${speedBonus ? ' (including speed bonus!)' : ''}`;
+
+                // Trigger confetti
+                createConfetti();
+
+                // Pulse effect
+                feedbackElement.classList.add('pulse-correct');
+                setTimeout(() => feedbackElement.classList.remove('pulse-correct'), 600);
+            } else {
+                incorrectAnswers++;
+                feedbackIcon.textContent = '❌';
+                feedbackTitle.textContent = 'Incorrect';
+                feedbackTitle.className = 'font-semibold text-lg mb-2 text-red-600';
+                pointsText = 'No points awarded';
+
+                // Pulse effect
+                feedbackElement.classList.add('pulse-incorrect');
+                setTimeout(() => feedbackElement.classList.remove('pulse-incorrect'), 600);
+            }
+
+            feedbackExplanation.textContent = question.explanation;
+            feedbackPoints.textContent = pointsText;
+            feedbackElement.classList.remove('hidden');
+
+            // Update score display
+            document.getElementById('score').textContent = score;
+
+            // Move to next question after delay
+            setTimeout(() => {
+                currentQuestion++;
+                loadQuestion();
+            }, 3000);
+        }
+
+        function createConfetti() {
+            for (let i = 0; i < 50; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = Math.random() * 100 + 'vw';
+                    confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
+                    document.body.appendChild(confetti);
+
+                    setTimeout(() => {
+                        confetti.remove();
+                    }, 4000);
+                }, i * 50);
+            }
+        }
+
+        function endGame() {
+            gameActive = false;
+            document.getElementById('game-screen').classList.add('hidden');
+            document.getElementById('results-screen').classList.remove('hidden');
+
+            // Update results
+            document.getElementById('final-score').textContent = score;
+            document.getElementById('cert-score').textContent = score;
+            document.getElementById('correct-count').textContent = correctAnswers;
+            document.getElementById('incorrect-count').textContent = incorrectAnswers;
+            document.getElementById('bonus-count').textContent = speedBonuses;
+            document.getElementById('cert-date').textContent = new Date().toLocaleDateString();
+
+            // Performance status based on new scoring system
+            const statusElement = document.getElementById('performance-status');
+            const certificateSection = document.getElementById('certificate-section');
+            const downloadBtn = document.getElementById('download-cert-btn');
+
+            if (score >= 450) {
+                statusElement.textContent = '🟢 Ready to Moderate - Excellent Performance!';
+                statusElement.className = 'mb-8 p-6 rounded-xl text-xl font-bold bg-green-100 text-green-800';
+                certificateSection.classList.remove('hidden');
+                downloadBtn.classList.remove('hidden');
+                createConfetti();
+            } else if (score >= 100) {
+                statusElement.textContent = '🟡 Needs Training - Good Effort, Keep Learning!';
+                statusElement.className = 'mb-8 p-6 rounded-xl text-xl font-bold bg-yellow-100 text-yellow-800';
+                certificateSection.classList.remove('hidden');
+                downloadBtn.classList.remove('hidden');
+            } else {
+                statusElement.textContent = '🔴 High Risk / Not Suitable - More Practice Required';
+                statusElement.className = 'mb-8 p-6 rounded-xl text-xl font-bold bg-red-100 text-red-800';
+            }
+
+            // Generate answer key
+            generateAnswerKey();
+        }
+
+        function generateAnswerKey() {
+            const mistakesList = document.getElementById('mistakes-list');
+            const completeAnswers = document.getElementById('complete-answers');
+
+            // Show mistakes
+            const mistakes = userAnswers.filter(answer => !answer.isCorrect);
+            if (mistakes.length > 0) {
+                mistakesList.innerHTML = `
+                    <h4 class="font-semibold text-red-600 mb-3">Your Mistakes (${mistakes.length}):</h4>
+                    <div class="space-y-3">
+                        ${mistakes.map(mistake => `
+                            <div class="bg-red-50 border-l-4 border-red-400 p-3 rounded">
+                                <div class="font-medium text-gray-800">Q${mistake.questionIndex + 1}: "${mistake.content}"</div>
+                                <div class="text-sm text-red-600 mt-1">
+                                    Your answer: ${mistake.userAnswer === 'keep' ? '✅ Keep' : mistake.userAnswer === 'remove' ? '❌ Remove' : '⏰ No answer'}
+                                </div>
+                                <div class="text-sm text-green-600">
+                                    Correct answer: ${mistake.correctAnswer === 'keep' ? '✅ Keep' : '❌ Remove'}
+                                </div>
+                                <div class="text-sm text-gray-600 mt-1">${mistake.explanation}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            } else {
+                mistakesList.innerHTML = '<div class="text-green-600 font-medium">🎉 Perfect! No mistakes!</div>';
+            }
+
+            // Show complete answer key
+            completeAnswers.innerHTML = questions.map((q, index) => `
+                <div class="flex items-start space-x-2 p-2 ${userAnswers[index] && !userAnswers[index].isCorrect ? 'bg-red-50 rounded' : ''}">
+                    <span class="font-medium text-gray-600 min-w-[3rem]">Q${index + 1}:</span>
+                    <span class="flex-1">"${q.content}"</span>
+                    <span class="font-medium ${q.correct === 'keep' ? 'text-green-600' : 'text-red-600'} min-w-[4rem]">
+                        ${q.correct === 'keep' ? '✅ Keep' : '❌ Remove'}
+                    </span>
+                </div>
+            `).join('');
+        }
+
+        function toggleAnswerKey() {
+            const answerKey = document.getElementById('answer-key');
+            answerKey.classList.toggle('hidden');
+        }
+
+        function downloadCertificate() {
+            // Create a simple text certificate for download
+            const certificateText = `
+EMOJI NINJA CERTIFICATE OF ACHIEVEMENT
+
+This certifies that you have successfully completed the
+Emoji Ninja Content Moderation Challenge
+Level 2 - TripAdvisor Content Moderator
+
+Final Score: ${score}/750
+Correct Answers: ${correctAnswers}/50
+Speed Bonuses: ${speedBonuses}
+Date: ${new Date().toLocaleDateString()}
+
+Status: ${score >= 450 ? 'Ready to Moderate' : score >= 100 ? 'Needs Training' : 'High Risk / Not Suitable'}
+            `;
+
+            const blob = new Blob([certificateText], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'Emoji_Ninja_Certificate.txt';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        function restartGame() {
+            currentQuestion = 0;
+            score = 0;
+            correctAnswers = 0;
+            incorrectAnswers = 0;
+            speedBonuses = 0;
+            userAnswers = [];
+
+            document.getElementById('results-screen').classList.add('hidden');
+            document.getElementById('welcome-screen').classList.remove('hidden');
+            document.getElementById('answer-key').classList.add('hidden');
+
+            // Reset displays
+            document.getElementById('score').textContent = '0';
+            document.getElementById('timer').textContent = '30';
+            document.getElementById('question-counter').textContent = '1/50';
+            document.getElementById('progress').style.width = '2%';
+        }
+    </script>
+    <script>(function () { function c() { var b = a.contentDocument || a.contentWindow.document; if (b) { var d = b.createElement('script'); d.innerHTML = "window.__CF$cv$params={r:'95f8cae8e03ec03d',t:'MTc1MjU3NzYwOS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);"; b.getElementsByTagName('head')[0].appendChild(d) } } if (document.body) { var a = document.createElement('iframe'); a.height = 1; a.width = 1; a.style.position = 'absolute'; a.style.top = 0; a.style.left = 0; a.style.border = 'none'; a.style.visibility = 'hidden'; document.body.appendChild(a); if ('loading' !== document.readyState) c(); else if (window.addEventListener) document.addEventListener('DOMContentLoaded', c); else { var e = document.onreadystatechange || function () { }; document.onreadystatechange = function (b) { e(b); 'loading' !== document.readyState && (document.onreadystatechange = e, c()) } } } })();</script>
+</body>
+
+</html>
